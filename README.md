@@ -1,6 +1,6 @@
 # River Plastic Emission Ranking — Updated Model (2025)
 
-> An independent ML-based update of the Meijer et al. (2021) global river plastic emission model, using 2024 data and improved uncertainty quantification.
+> An independent ML-based update of the Meijer et al. (2021) global river plastic emission model, using ERA5-Land runoff forcing through 2025 and waste statistics updated to 2022 (World Bank What a Waste 3.0).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
@@ -14,7 +14,7 @@
 Meijer et al. (2021) established the most widely used global ranking of rivers by plastic emission to the ocean — the foundation for The Ocean Cleanup's 30 Cities Program and similar initiatives. That model was calibrated on data from ~2015 and uses a hand-tuned probabilistic formulation.
 
 Three years later:
-- Waste management data has been substantially updated (World Bank What a Waste 3.0, 2026)
+- Waste management data has been substantially updated (World Bank What a Waste 3.0, published 2026 with data through 2022)
 - MERIT Hydro v2 provides a 90m river network vs the 500m used previously
 - Post-2021 field observations from ~30 additional rivers are now available for validation
 - ML methods can replace expert-elicited parameters with data-driven uncertainty quantification
@@ -40,7 +40,7 @@ This project reproduces the Meijer 2021 baseline, then improves it with updated 
 | Meijer 2021 outputs | [figshare 10.6084/m9.figshare.14515590](https://figshare.com/articles/dataset/14515590) | Baseline reproduction + validation flux obs |
 | MERIT Hydro v1.0.1 | [global-hydrodynamics.github.io](https://global-hydrodynamics.github.io/MERIT_Hydro/) | River network, upstream area, channel width |
 | HydroRIVERS v1.0 | [hydrosheds.org](https://www.hydrosheds.org/products/hydrorivers) | River reach topology |
-| ERA5-Land monthly | [ECMWF CDS](https://cds.climate.copernicus.eu) | Runoff forcing 2015–2025 |
+| ERA5-Land monthly | [ECMWF CDS](https://cds.climate.copernicus.eu) | Runoff forcing 2015–2025 (early 2026 available) |
 | What a Waste 3.0 | [World Bank](https://datatopics.worldbank.org/what-a-waste/) | Waste generation + management rates |
 | WorldClim v2.1 | [worldclim.org](https://worldclim.org) | Precipitation climatology |
 | NASA VIIRS nightlights | [NASA Earthdata](https://earthdata.nasa.gov) | Urbanization proxy |
@@ -118,9 +118,9 @@ conda activate riverplastic
 This model follows Meijer et al.'s conceptual framework (mismanaged plastic waste × mobilization probability × river transport probability) but replaces the expert-elicited parameters with a gradient-boosted regression (XGBoost) trained on observed plastic flux measurements from ~80 rivers globally.
 
 Key improvements over Meijer 2021:
-1. **Updated waste data** — World Bank What a Waste 3.0 (2026) vs Jambeck 2015
+1. **Updated waste data** — World Bank What a Waste 3.0 (data through 2022) vs Jambeck 2015
 2. **Higher-resolution river network** — MERIT Hydro 90m vs HydroSHEDS 500m
-3. **Temporal forcing** — ERA5 runoff anomalies 2015–2024 vs static climatology
+3. **Temporal forcing** — ERA5 runoff anomalies 2015–2025 vs static climatology
 4. **New features** — urbanization trend (VIIRS), infrastructure access (OSM), WASH investment index
 5. **Uncertainty quantification** — conformal prediction intervals vs point estimates
 6. **Extended validation** — ~80 observed fluxes vs ~50 in original paper
@@ -132,10 +132,10 @@ Key improvements over Meijer 2021:
 If you use this work, please cite:
 
 ```bibtex
-@misc{castillo2025riverplastic,
+@misc{castillo2026riverplastic,
   author    = {Castillo, Pablo},
-  title     = {Updated Global River Plastic Emission Ranking (2024)},
-  year      = {2025},
+  title     = {Updated Global River Plastic Emission Ranking (2025)},
+  year      = {2026},
   publisher = {EarthArXiv},
   note      = {Preprint. github.com/pablocs116/river-plastic-ranking}
 }
