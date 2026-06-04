@@ -1,4 +1,4 @@
-# River Plastic Emission Ranking — Updated Model (2024)
+# River Plastic Emission Ranking — Updated Model (2025)
 
 > An independent ML-based update of the Meijer et al. (2021) global river plastic emission model, using 2024 data and improved uncertainty quantification.
 
@@ -27,8 +27,8 @@ This project reproduces the Meijer 2021 baseline, then improves it with updated 
 
 - **Updated global river plastic emission estimates** (metric tons/year, with 90% CI)
 - **Delta map**: rank change vs Meijer 2021 — which rivers have gotten worse, which better
-- **Temporal trend layer**: emission trajectory 2015–2024 per river
-- **Feature importance**: what actually drives emissions in 2024 (SHAP values)
+- **Temporal trend layer**: emission trajectory 2015–2025 per river
+- **Feature importance**: what actually drives emissions in 2025 (SHAP values)
 - **Validation report**: held-out R², RMSE vs Meijer baseline
 
 ---
@@ -40,7 +40,7 @@ This project reproduces the Meijer 2021 baseline, then improves it with updated 
 | Meijer 2021 outputs | [figshare 10.6084/m9.figshare.14515590](https://figshare.com/articles/dataset/14515590) | Baseline reproduction + validation flux obs |
 | MERIT Hydro v1.0.1 | [global-hydrodynamics.github.io](https://global-hydrodynamics.github.io/MERIT_Hydro/) | River network, upstream area, channel width |
 | HydroRIVERS v1.0 | [hydrosheds.org](https://www.hydrosheds.org/products/hydrorivers) | River reach topology |
-| ERA5-Land monthly | [ECMWF CDS](https://cds.climate.copernicus.eu) | Runoff forcing 2015–2024 |
+| ERA5-Land monthly | [ECMWF CDS](https://cds.climate.copernicus.eu) | Runoff forcing 2015–2025 |
 | What a Waste 3.0 | [World Bank](https://datatopics.worldbank.org/what-a-waste/) | Waste generation + management rates |
 | WorldClim v2.1 | [worldclim.org](https://worldclim.org) | Precipitation climatology |
 | NASA VIIRS nightlights | [NASA Earthdata](https://earthdata.nasa.gov) | Urbanization proxy |
