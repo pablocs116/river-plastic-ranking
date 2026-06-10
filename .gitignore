@@ -35,6 +35,9 @@ env/
 venv/
 *.conda
 
+# Cache
+cache/
+
 # OS
 .DS_Store
 Thumbs.db

@@ -56,63 +56,20 @@ def download_meijer2021():
 
 
 def download_worldbank_waste():
-    print("\n[2/3] World Bank What a Waste 3.0 (via Data360 API)")
+    print("\n[2/3] World Bank What a Waste 3.0 (country dataset xlsx)")
     out_dir = DATA_RAW / "worldbank_waste"
-    out_file = out_dir / "what_a_waste_3.0.csv"
     out_dir.mkdir(parents=True, exist_ok=True)
-    if out_file.exists():
-        print(f"  [skip] {out_file.name} already exists")
+    xlsx_file = out_dir / "what_a_waste_3.0_country.xlsx"
+
+    if xlsx_file.exists():
+        print(f"  [skip] {xlsx_file.name} already exists")
         return
 
-    WAW_INDICATORS = [
-        "WM_MSW_GEN",
-        "WM_MSW_COMP",
-        "WM_MSW_TREAT",
-        "WM_MSW_UNC",
-        "WM_COL_COV",
-        "WM_DRS_SYS",
-        "WM_EPR_SYS",
-        "WM_LEG_PLS",
-        "WM_NMSW_COMP",
-        "WM_SWM_INS",
-        "WM_WKRS_REF",
-    ]
-
-    all_rows = []
-    for indicator in WAW_INDICATORS:
-        print(f"  Fetching {indicator}...")
-        resp = requests.post(
-            "https://data360api.worldbank.org/data360/portal/v1/data",
-            json={
-                "Site": "data360",
-                "Database_ID": "WB_WAW",
-                "indicator": indicator,
-                "ref_area": "all",
-            },
-            timeout=60,
-        )
-        resp.raise_for_status()
-        data = json.loads(resp.content.decode("utf-8-sig"))
-        for item in data:
-            row = {
-                "REF_AREA": item.get("REF_AREA"),
-                "INDICATOR": item.get("INDICATOR"),
-                "UNIT_MEASURE": item.get("UNIT_MEASURE"),
-                "FREQ": item.get("FREQ"),
-            }
-            time_series = item.get("data", {}).get("yAxis", [])
-            years = item.get("data", {}).get("xAxis", [])
-            for yr, val in zip(years, time_series):
-                row[f"YR_{yr}"] = val
-            all_rows.append(row)
-
-    if all_rows:
-        import pandas as pd
-        df = pd.DataFrame(all_rows)
-        df.to_csv(out_file, index=False)
-        print(f"  Saved {len(df)} rows to {out_file.name}")
-    else:
-        print("  WARNING: No data retrieved from Data360 API")
+    url = (
+        "https://datacatalogfiles.worldbank.org/ddh-published/0039597"
+        "/DR0095901/What_a_Waste_3.0_COUNTRY_Dataset_%26_Codebook.xlsx"
+    )
+    download_file(url, xlsx_file, "What a Waste 3.0 country dataset")
     print("  Done.")
 
 
