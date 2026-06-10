@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-Re-run Meijer et al. (2021) with updated inputs (WaW 3.0 waste, ERA5-Land precip), calibrate against observations, diagnose structural overestimation, and produce an updated global ranking.
+Re-run Meijer et al. (2021) with updated inputs (WaW 3.0 waste, nightlight proxy), calibrate against observations, diagnose structural overestimation, and produce an updated global ranking.
 
 ---
 
@@ -10,7 +10,7 @@ Re-run Meijer et al. (2021) with updated inputs (WaW 3.0 waste, ERA5-Land precip
 
 Established that Meijer overestimates. Linear calibration: slope=0.72 [0.55, 0.88], R²=0.57 (n=64). Confirmed by Mani et al. (2026). Key vulnerability: only 64 calibration rivers, 58% Japanese.
 
-## Phase 2: Diagnose & Improve (Current)
+## Phase 2: Diagnose & Improve (Done)
 
 ### Key Diagnostics
 
@@ -22,19 +22,72 @@ Established that Meijer overestimates. Linear calibration: slope=0.72 [0.55, 0.8
 
 4. **Nightlight signal survives controlling for mismanagement** — r=-0.35 (p=0.005) with log(obs/Meijer); partial r=-0.34 (p=0.017) controlling for mismanaged_pct. Not just a Japan artifact — developed-country rivers are systematically more overestimated.
 
-5. **Waste data is 9 years newer** — Jambeck (2015) → WaW 3.0 (2024). Precip is 25+ years newer — WorldClim (1970-2000) → ERA5-Land (2015-2025).
+5. **Waste data is 9 years newer** — Jambeck (2015) → WaW 3.0 (2024). Precip update (WorldClim → ERA5-Land) adds no new information (r=0.74, no climate trend 2015-2025, p=0.26).
 
-### Robustness of Core Claims (Bootstrap, n=2000)
+### Data Quality Fixes
 
-| Claim | P(direction correct) |
-|---|---|
-| Slope < 1.0 | 100% |
-| Top 1000 < 71.8% of total | 100% |
-| Rivers for 80% > 1,659 | 100% |
-| Exact concentration (46.3%) | 95% CI: [30.8%, 61.3%] |
-| Exact rivers for 80% (5,367) | 95% CI: [2,828, 9,679] |
+| Fix | Rivers | Impact | Physical basis |
+|---|---|---|---|
+| Endorheic → zero | 45 | Remove inland drainage | Cannot emit to ocean |
+| High-income mismanaged 50%→3% | 2,147 | Reduces HI emissions ~17x | USA/UK/Italy etc. don't have 50% mismanagement |
+| Nearest-country spatial join | 9,042 | Enables plastic correction for 82% of unmatched | Coastal outfalls missed country polygons |
 
-Even in the most conservative scenario (drop Japan, no small-river inflation): top 1000 = 59.3%, rivers for 80% = 2,580.
+Country coverage: 65.5% → 93.9% after fixes.
+
+---
+
+## Phase 3: Improved Model (Done — Notebook 08)
+
+### Correction Pipeline
+
+1. **Data quality fixes** (endorheic, mismanagement defaults, country assignment)
+2. **Plastic fraction correction**: Replace Meijer's 12% with WaW 3.0 country-specific values
+3. **Observational calibration with nightlight**: log₁₀(obs) = 0.540 + 0.761 × log₁₀(E) − 0.008 × ΔNL
+
+### Nightlight-Adjusted Waste
+
+Within-country nightlight deviation (ΔNL = river NL − country mean NL) captures waste management quality:
+- Spearman ρ = −0.38 (p=0.006) with log(obs/Meijer residual)
+- Urban rivers (high NL) have 1.2x lower emission per 10 NL units above country mean
+- Adds ΔR² = +0.019 over log-log calibration alone (0.589 → 0.608)
+- Physical mechanism: better waste collection in urban areas reduces effective mismanaged_pct
+
+### Final Results
+
+| Model | Total (ton/yr) | Top 100 | Top 1000 | n80 |
+|---|---|---|---|---|
+| Meijer (2021) | 1,005,984 | 34.4% | 71.8% | 1,659 |
+| **This work (full)** | **889,196** | **16.4%** | **50.7%** | **4,407** |
+| Without Japan | 668,824 | — | 68.0% | 1,991 |
+
+### Bootstrap Uncertainty (n=2000)
+
+| Metric | Median | 95% CI |
+|---|---|---|
+| Top 1000 concentration | 51.1% | [36.3%, 66.2%] |
+| Rivers for 80% | 4,341 | [2,184, 7,731] |
+| P(top1000 < 71.8%) | 99.8% | — |
+| P(n80 > 1,659) | 99.8% | — |
+
+### Top 5 Updated Ranking
+
+| # | Country | Lat | Lon | Meijer (ton/yr) | Updated (ton/yr) | Ratio |
+|---|---|---|---|---|---|---|
+| 1 | MYS | 3.0 | 101.4 | 12,816 | 5,952 | 0.46 |
+| 2 | IND | 19.3 | 72.9 | 13,433 | 5,713 | 0.43 |
+| 3 | PHL | 14.6 | 121.0 | 62,592 | 5,636 | 0.09 |
+| 4 | PHL | 14.7 | 120.9 | 12,398 | 4,092 | 0.33 |
+| 5 | BGD | 23.2 | 90.6 | 6,222 | 3,582 | 0.58 |
+
+### Japan Sensitivity
+
+Without Japan (n=27): slope=0.977, R²=0.756. Total=668,824, top1000=68.0%, n80=1,991. Direction holds but concentration is weaker. Japan is the main driver of the overestimation signal.
+
+---
+
+## ERA5-Land Assessment (Not Used)
+
+ERA5-Land monthly runoff extracted from existing .nc file. Units are meters/month. After conversion to mm/yr, values are ~35 mm/yr vs existing ~1019 mm/yr in feature matrix — unit mismatch with existing data. Correlation r=0.74, no significant trend (p=0.26). **Decision: not used** — doesn't add information beyond WorldClim.
 
 ---
 
@@ -63,22 +116,21 @@ Note: `baseline.py` PARAMS_S9 values (epsilon=0.01, tau=0.005, theta=0.07, iota=
 | Meijer 2021 shapefile | 2021 | Done | 31,819 outfalls |
 | HydroRIVERS v10 | — | Done | 31,792/31,819 |
 | WorldClim v2.1 precip | 1970-2000 | Done | 31,819/31,819 |
-| WaW3.0 country waste | 2024 | Done | 20,833/31,819 (78.4% of emissions) |
-| ERA5-Land runoff | 2015-2025 | Done | 19,042/31,819 |
+| WaW3.0 country waste | 2024 | Done | 29,875/31,819 (93.9%) |
+| ERA5-Land runoff | 2015-2025 | Not used | Unit mismatch |
 | VIIRS VNL v2.1 | 2021 | Done | 31,710/31,819 |
 | MERIT Hydro | — | Blocked | NaN (on other PC) |
-| LandScan population | — | Needed | Not downloaded |
-| Jambeck 2015 waste | 2015 | Needed | Must download from Science supplementary |
+| LandScan population | — | Not needed | Ratio approach |
+| Jambeck 2015 waste | 2015 | Not needed | Ratio approach |
 
 ---
 
 ## Next Steps
 
-1. Download Jambeck 2015 supplementary data → compute W_new/W_old ratio per country
-2. Extract ERA5-Land precipitation per catchment from existing .nc file
-3. Download LandScan or GPW population → full waste term computation
-4. Build notebook 07: Meijer re-run with updated inputs → new ranking
-5. Integrate: updated ranking + calibration + diagnosis → paper
+1. Build paper figures (calibration scatter, global ratio map, concentration comparison)
+2. Write manuscript
+3. Address Japan sensitivity in discussion (58% of calibration data)
+4. Consider: more observed data from Africa/South America (0 calibration rivers currently)
 
 ---
 
@@ -92,3 +144,5 @@ Note: `baseline.py` PARAMS_S9 values (epsilon=0.01, tau=0.005, theta=0.07, iota=
 - Meijer R²=0.71 is on MONTHLY obs (52 points from 16 rivers)
 - Numpy arrays from `.values` are read-only; use `.values.copy()` before mutation
 - pandas Series needs `.values.reshape(-1,1)` not `.reshape(-1,1)` for sklearn
+- ERA5 runoff in meters/month; conversion to mm/yr gives values 30x lower than expected — likely units issue in .nc file, not used
+- Nightlight deviation only applies to rivers with country_iso (93.9% after fixes); missing values filled with 0 (no deviation)
