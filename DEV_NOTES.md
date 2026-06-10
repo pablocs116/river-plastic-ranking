@@ -1,129 +1,40 @@
 # River Plastic Ranking — Development Notes
 
-## Project Status
+## Project Goal
 
-Recalibrating Meijer et al. (2021) global river plastic emission model with observed flux data.
-
-**Core result**: Linear calibration slope=0.72 [0.55, 0.88], R²=0.57 (n=64). Models overestimate by ~28% on average.
-
-**Key blocker**: Only 64 calibration rivers (37 Japan, 27 rest-of-world). 0 African, 0 South American.
+Re-run Meijer et al. (2021) with updated inputs (WaW 3.0 waste, ERA5-Land precip), calibrate against observations, diagnose structural overestimation, and produce an updated global ranking.
 
 ---
 
-## Publishable Claims
+## Phase 1: Search (Done)
 
-### 1. Models overestimate (slope < 1) — STRONG
-- log₁₀(obs) = 0.720 × log₁₀(Meijer) + 0.624, 95% CI on slope: [0.554, 0.881]
-- Independently confirmed by Mani et al. (2026): observed fluxes 34-98% lower than models
-- Must report sensitivity: with Japan slope=0.720, without Japan slope=0.852
+Established that Meijer overestimates. Linear calibration: slope=0.72 [0.55, 0.88], R²=0.57 (n=64). Confirmed by Mani et al. (2026). Key vulnerability: only 64 calibration rivers, 58% Japanese.
 
-### 2. Episodic transport explains monthly vs annual R² gap — SECONDARY
-- Monthly R²=0.73 >> annual R²=0.50-0.57
-- Mani Table 1: 50% of annual flux occurs in 7-12% of the year
-- Monthly obs capture flushes; annualizing dilutes the signal
+## Phase 2: Diagnose & Improve (Current)
 
-### 3. Tidal retention is a known overestimation mechanism — CITE MANI
-- Mani: 26-43% of days have zero/reverse flow in tidal estuaries
-- This is their finding, not ours — cite as supporting evidence for Claim 1
-- DO NOT attribute European overprediction to tidal retention — Besos/Llobregat are microtidal Mediterranean rivers, yet most overpredicted. Likely cause: waste management (Europe <5% mismanaged waste).
+### Key Diagnostics
 
-## Non-publishable
-- European overprediction: n=9, outlier-driven, likely waste management
-- Waste data no improvement: null result, insufficient power (ΔR²=0.002, P>0.4)
-- Waste-adjusted ranking: no validation
+1. **No single model term explains the overestimation** — Partial correlations of P(O), P(M), log(W×PR) with log(obs/Meijer) are all ~0 when controlling for emission magnitude. Slope < 1 is a *structural* feature of the multiplicative cascade, not a broken parameter.
 
-## Must Disclose
-- Japan dominates calibration (58%); without Japan slope=0.852, R²=0.678
-- Only 27 non-Japanese calibration rivers
-- Cannot validate waste data updates or regional differences
+2. **P(O) retention is nearly inert** — ι=0.999, μ=0.99 → P(O)≈1 for all rivers. Optimizing P(O) params drops ι→0.91, μ→0.90, adds retention, but R²=0.51 (worse than log-log calibration at 0.60). Catchment-level approximation limits parameter optimization.
 
----
+3. **Plastic fraction is the biggest input error** — Meijer assumed 12% constant. WaW 3.0 ranges 1.6–30% per country. This alone reorders the top 20: Malaysia rises 2x (24% vs 12%), Philippines drops 0.88x (10.5% vs 12%), Cameroon drops 0.28x (3.3% vs 12%).
 
-## Notebooks & Key Files
+4. **Nightlight signal survives controlling for mismanagement** — r=-0.35 (p=0.005) with log(obs/Meijer); partial r=-0.34 (p=0.017) controlling for mismanaged_pct. Not just a Japan artifact — developed-country rivers are systematically more overestimated.
 
-| Notebook | Description | Status |
-|---|---|---|
-| 01_baseline_reproduction | Meijer 2021 shapefile, 31,819 rivers | Done |
-| 02_feature_engineering | HydroRIVERS, WorldClim, WaW3.0, ERA5-Land, VIIRS → 31,819×43 matrix | Done |
-| 03_model_training | XGBoost on Meijer predictions — circular (R²=0.58) | Done (not useful) |
-| 04_observed_flux_model | XGBoost failed (R²=-0.03), linear calibration R²=0.57 | Done |
-| 05_updated_ranking | Calibrated ranking, waste adjustment exploratory, residual analysis | Done |
+5. **Waste data is 9 years newer** — Jambeck (2015) → WaW 3.0 (2024). Precip is 25+ years newer — WorldClim (1970-2000) → ERA5-Land (2015-2025).
 
-| File | Description |
+### Robustness of Core Claims (Bootstrap, n=2000)
+
+| Claim | P(direction correct) |
 |---|---|
-| `data/processed/feature_matrix_v1.csv` | 31,819 × 43 feature matrix |
-| `data/processed/observed_flux_matched_S3.csv` | 66 observed rivers (64 unique) |
-| `data/processed/final_ranking_all_rivers.csv` | Calibrated + waste-adjusted ranking |
-| `data/processed/final_top1000_ranking.csv` | Top 1000 |
-| `data/processed/meijer_calibration_model.pkl` | Linear calibration (slope=0.72) |
-| `scripts/build_observed_flux_s3.py` | Table S3 extraction from Meijer PDF |
-| `src/models/baseline.py` | Meijer Run 5 reimplemention |
-| `data/raw/mani2026_S1_RMS.xlsx` | Mani camera data (4 sheets) |
-| `data/raw/mani2026_S3_Model.xlsx` | Mani model simulations (3 sheets) |
+| Slope < 1.0 | 100% |
+| Top 1000 < 71.8% of total | 100% |
+| Rivers for 80% > 1,659 | 100% |
+| Exact concentration (46.3%) | 95% CI: [30.8%, 61.3%] |
+| Exact rivers for 80% (5,367) | 95% CI: [2,828, 9,679] |
 
----
-
-## Data Inventory
-
-| Dataset | Status | Coverage | Location |
-|---|---|---|---|
-| Meijer 2021 shapefile | Done | 31,819 outfalls | `data/raw/meijer2021/` |
-| HydroRIVERS v10 | Done | 31,792/31,819 | `data/raw/hydrorivers/` |
-| WorldClim v2.1 precip | Done | 31,819/31,819 | `data/raw/worldclim/` |
-| WaW3.0 country xlsx | Done | 20,833/31,819 | `data/raw/worldbank_waste/` |
-| ERA5-Land runoff | Done | 19,042/31,819 | `data/raw/era5/` |
-| VIIRS VNL v2.1 | Done | 31,710/31,819 | `data/processed/` |
-| MERIT Hydro | Blocked | NaN (on other PC) | `data/raw/merit_hydro/` |
-| OSM road density | Skipped | — | VIIRS covers similar signal |
-
----
-
-## What More Data Unblocks
-
-| Blocked? | Improvement | Why |
-|---|---|---|
-| YES | ML model | n=64 is 2-3× too small for XGBoost |
-| YES | Validate waste updates | Can't detect signal with n=64 |
-| YES | Regional calibration | 0 African, 0 South American rivers |
-| YES | Robust slope estimate | Japan (58%) distorts it |
-| PARTLY | Grid-level model | Can build it, but can't validate it |
-
----
-
-## MERIT Hydro
-
-**Why needed**: Meijer's P(R) and P(O) require per-cell flow path accumulation at ~1km. Catchment-level approximation failed (R²=-0.03, all predictions ~640 ton/yr).
-
-| Tile | Variable | Unlocks |
-|---|---|---|
-| `upa` | Upstream area | Cross-check for HydroRIVERS |
-| `chw` | Channel width | P(O) with width instead of stream order |
-| `elv` | Elevation | Slope → real P(R) instead of constant ζ=0.4 |
-| `dir` | Flow direction | Cell-by-cell flow path tracing |
-
-**Status**: ~200GB on other PC. Transfer when possible.
-**Alternative**: GEE has MERIT Hydro but requires account.
-
----
-
-## Mani et al. (2026) — Key Findings
-
-"Three rivers to the test" — Rio Ozama (Dominican Republic), Umgeni (South Africa), Chao Phraya (Thailand)
-- 196 GPS drifters, 41 cameras, 3 years (2020-2022)
-- **Observed fluxes 34-98% lower than global model estimates**
-- 50% of annual flux in 7-12% of the year (episodic)
-- 26-43% of days have zero/reverse flow (tidal retention)
-- Cannot add as calibration points: RMS measures surface daylight-only, not total 24h flux
-
----
-
-## Next Steps (Priority Order)
-
-1. **Search for more observed flux data** — #1 bottleneck. Target 100+ rivers.
-2. **Read Mani main paper** — check if their calibrated total-flux estimates can be calibration points
-3. **Transfer MERIT Hydro** — enables grid-level model
-4. **Regional calibration** — separate slope per continent (need more data first)
-5. **Monte Carlo UQ** — bootstrap already computed (10K slopes)
+Even in the most conservative scenario (drop Japan, no small-river inflation): top 1000 = 59.3%, rivers for 80% = 2,580.
 
 ---
 
@@ -141,16 +52,43 @@ Recalibrating Meijer et al. (2021) global river plastic emission model with obse
 | Q lower threshold | μ | 0.99 | minimum discharge probability |
 | Landuse coeff | ν | 0.75 | scales landuse roughness |
 
+Note: `baseline.py` PARAMS_S9 values (epsilon=0.01, tau=0.005, theta=0.07, iota=0.01, kappa=0.001, mu=0.95) do NOT match Run 5 — they are a separate catchment-level parameterization. The code was never executed end-to-end.
+
+---
+
+## Data Inventory
+
+| Dataset | Vintage | Status | Coverage |
+|---|---|---|---|
+| Meijer 2021 shapefile | 2021 | Done | 31,819 outfalls |
+| HydroRIVERS v10 | — | Done | 31,792/31,819 |
+| WorldClim v2.1 precip | 1970-2000 | Done | 31,819/31,819 |
+| WaW3.0 country waste | 2024 | Done | 20,833/31,819 (78.4% of emissions) |
+| ERA5-Land runoff | 2015-2025 | Done | 19,042/31,819 |
+| VIIRS VNL v2.1 | 2021 | Done | 31,710/31,819 |
+| MERIT Hydro | — | Blocked | NaN (on other PC) |
+| LandScan population | — | Needed | Not downloaded |
+| Jambeck 2015 waste | 2015 | Needed | Must download from Science supplementary |
+
+---
+
+## Next Steps
+
+1. Download Jambeck 2015 supplementary data → compute W_new/W_old ratio per country
+2. Extract ERA5-Land precipitation per catchment from existing .nc file
+3. Download LandScan or GPW population → full waste term computation
+4. Build notebook 07: Meijer re-run with updated inputs → new ranking
+5. Integrate: updated ranking + calibration + diagnosis → paper
+
 ---
 
 ## Technical Gotchas
 
 - ERA5 uses `valid_time` not `time`, variables `ro`/`ssro`/`sro`
-- WaW3.0 `plastic_pct` and treatment values are 0-1 fractions, not 0-100
-- `naturalearth_lowres` from `gpd.datasets` deprecated; use naciscdn.org direct download
+- WaW3.0 `plastic_pct` and `mismanaged_pct` are percentages (0-100) in feature matrix; `mpw_kg_cap_day = waste × (plastic/100) × (mismanaged/100)`
+- `naturalearth_lowres` deprecated; use naciscdn.org direct download
 - `sjoin_nearest` can produce duplicates — deduplicate with `~df.index.duplicated(keep="first")`
 - Meijer `dots_exten` = annual midpoint emission (tons/yr)
 - Meijer R²=0.71 is on MONTHLY obs (52 points from 16 rivers)
 - Numpy arrays from `.values` are read-only; use `.values.copy()` before mutation
 - pandas Series needs `.values.reshape(-1,1)` not `.reshape(-1,1)` for sklearn
-- S3 "year" period values are already monthly; annualize by ×12
