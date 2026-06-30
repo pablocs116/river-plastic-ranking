@@ -1,6 +1,6 @@
 # River Plastic Emission Ranking — Updated Model (2025)
 
-> An independent ML-based update of the Meijer et al. (2021) global river plastic emission model, using ERA5-Land runoff forcing through 2025 and waste statistics updated to 2022 (World Bank What a Waste 3.0).
+> An independent recalibration of the Meijer et al. (2021) global river plastic emission model against 64 observed flux measurements, with updated waste statistics (World Bank What a Waste 3.0) and a nightlight-based correction for urban waste management quality.
 
 [License: MIT](LICENSE)
 [Python 3.11](https://www.python.org/)
@@ -13,24 +13,21 @@
 
 Meijer et al. (2021) established the most widely used global ranking of rivers by plastic emission to the ocean — the foundation for The Ocean Cleanup's 30 Cities Program and similar initiatives. That model was calibrated on data from ~2015 and uses a hand-tuned probabilistic formulation.
 
-Three years later:
+Five years later:
 
-- Waste management data has been substantially updated (World Bank What a Waste 3.0, published 2026 with data through 2022)
-- MERIT Hydro v2 provides a 90m river network vs the 500m used previously
-- Post-2021 field observations from ~30 additional rivers are now available for validation
-- ML methods can replace expert-elicited parameters with data-driven uncertainty quantification
+- Waste management data has been substantially updated (World Bank What a Waste 3.0, published 2024 with data through 2022)
+- Post-2021 field observations from additional rivers are now available for validation
 
-This project reproduces the Meijer 2021 baseline, then improves it with updated inputs and an XGBoost model with conformal prediction intervals. The result is an updated top-1000 river ranking with per-river uncertainty bounds — directly actionable for deployment prioritization.
+This project reproduces the Meijer 2021 baseline, diagnoses a structural overestimation for high-emission rivers (log-log slope ~0.7), and applies a linear calibration against 64 observed flux measurements. The result is an updated ranking of 31,819 river outfalls with bootstrap uncertainty estimates — directly actionable for deployment prioritization.
 
 ---
 
 ## Key outputs
 
-- **Updated global river plastic emission estimates** (metric tons/year, with 90% CI)
-- **Delta map**: rank change vs Meijer 2021 — which rivers have gotten worse, which better
-- **Temporal trend layer**: emission trajectory 2015–2025 per river
-- **Feature importance**: what actually drives emissions in 2025 (SHAP values)
-- **Validation report**: held-out R², RMSE vs Meijer baseline
+- **Recalibrated global river plastic emission estimates** (31,819 outfalls, metric tons/year)
+- **Bootstrap uncertainty**: 95% CIs on concentration metrics (n=2,000 resamples)
+- **Delta map**: rank change vs Meijer 2021 — which rivers are most affected by recalibration
+- **Validation report**: calibration R², Spearman ρ, Japan sensitivity analysis
 
 ---
 

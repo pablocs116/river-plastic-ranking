@@ -18,17 +18,14 @@ What it does:
 
 import subprocess
 import sys
-import warnings
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import rasterio
-from scipy.ndimage import distance_transform_edt
+from rasterio.errors import RasterioIOError
 
-warnings.filterwarnings("ignore")
-
-MERIT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("../data/raw/merit_hydro/15s")
+MERIT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("data/raw/merit_15s_filtered/15s")
 OUTFALLS_CSV = Path("river_outfalls.csv")
 OUTPUT_CSV = Path("data/processed/merit_extracted.csv")
 
@@ -46,7 +43,14 @@ def compute_slope_tiles():
 
     SLP_DIR.mkdir(parents=True, exist_ok=True)
 
-    elv_tiles = sorted(ELV_DIR.glob("*.tif"))
+    all_elv_tiles = sorted(ELV_DIR.glob("*.tif"))
+    invalid_elv = [tif for tif in all_elv_tiles if tif.stat().st_size == 0]
+    if invalid_elv:
+        print(f"Warning: skipping {len(invalid_elv)} empty elv tile(s):")
+        for tif in invalid_elv:
+            print(f"  {tif.name}")
+
+    elv_tiles = [tif for tif in all_elv_tiles if tif.stat().st_size > 0]
     print(f"Computing slope from {len(elv_tiles)} elevation tiles...")
 
     for i, tif in enumerate(elv_tiles):
@@ -100,11 +104,11 @@ def sample_nearest_valid(src, lons, lats, search_radius=SEARCH_RADIUS_PX):
                             values[i] = window[local_row, local_col]
                             continue
 
-                    distances = distance_transform_edt(~valid_mask)
-                    nearest_idx = np.unravel_index(
-                        np.argmin(distances + np.where(valid_mask, 0, 1e10)), distances.shape
-                    )
-                    if distances[nearest_idx] <= search_radius:
+                    r_idx, c_idx = np.indices(window.shape)
+                    dist = np.sqrt((r_idx - local_row) ** 2 + (c_idx - local_col) ** 2)
+                    dist[~valid_mask] = np.inf
+                    nearest_idx = np.unravel_index(np.argmin(dist), window.shape)
+                    if dist[nearest_idx] <= search_radius:
                         values[i] = window[nearest_idx]
 
     return values
@@ -116,24 +120,31 @@ def extract_variable(var_name, var_dir, df):
     values = np.full(len(df), np.nan)
 
     for tif in tif_files:
-        with rasterio.open(tif) as src:
-            bounds = src.bounds
-            mask = (
-                (df["lon"].values >= bounds.left - 1)
-                & (df["lon"].values <= bounds.right + 1)
-                & (df["lat"].values >= bounds.bottom - 1)
-                & (df["lat"].values <= bounds.top + 1)
-            )
-            if mask.sum() == 0:
-                continue
+        if tif.stat().st_size == 0:
+            print(f"  skipping empty {tif.name}")
+            continue
+        try:
+            with rasterio.open(tif) as src:
+                bounds = src.bounds
+                mask = (
+                    (df["lon"].values >= bounds.left - 1)
+                    & (df["lon"].values <= bounds.right + 1)
+                    & (df["lat"].values >= bounds.bottom - 1)
+                    & (df["lat"].values <= bounds.top + 1)
+                )
+                if mask.sum() == 0:
+                    continue
 
-            idx = np.where(mask)[0]
-            sampled = sample_nearest_valid(
-                src, df["lon"].values[idx], df["lat"].values[idx]
-            )
-            for j, ii in enumerate(idx):
-                if np.isfinite(sampled[j]):
-                    values[ii] = sampled[j]
+                idx = np.where(mask)[0]
+                sampled = sample_nearest_valid(
+                    src, df["lon"].values[idx], df["lat"].values[idx]
+                )
+                for j, ii in enumerate(idx):
+                    if np.isfinite(sampled[j]):
+                        values[ii] = sampled[j]
+        except RasterioIOError as e:
+            print(f"  skipping unreadable {tif.name}: {e}")
+            continue
 
     valid = np.isfinite(values)
     print(f"  Valid: {valid.sum():,}/{len(df)} ({valid.mean()*100:.1f}%)")

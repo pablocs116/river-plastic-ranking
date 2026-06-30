@@ -31,6 +31,7 @@ build/
 
 # Environments
 .venv/
+.river-env
 env/
 venv/
 *.conda
