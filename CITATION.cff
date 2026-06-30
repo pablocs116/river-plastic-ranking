@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the archived dataset below."
+title: "River Plastic Emission Ranking — Updated Model"
+authors:
+  - family-names: "Cabriada Sierra"
+    given-names: "Pablo"
+    affiliation: "Universidad de Zaragoza"
+    orcid: "https://orcid.org/0009-0001-0699-4013"
+repository-code: "https://github.com/pablocs116/river-plastic-ranking"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20793131
+    description: "Raw input datasets (Zenodo archive)"
+license: MIT
+references:
+  - type: article
+    authors:
+      - family-names: "Meijer"
+        given-names: "Lourens J. J."
+    title: "More than 1000 rivers account for 80% of global riverine plastic emissions into the ocean"
+    journal: "Science Advances"
+    year: 2021
+    doi: 10.1126/sciadv.aaz5803

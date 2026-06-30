@@ -4,8 +4,18 @@
 
 [License: MIT](LICENSE)
 [Python 3.11](https://www.python.org/)
-[Preprint](#)
+[Raw data DOI: 10.5281/zenodo.20793131](https://doi.org/10.5281/zenodo.20793131)
 [Status: In Progress](#)
+
+---
+
+## Data availability
+
+Raw input datasets (Meijer 2021 shapefile, HydroRIVERS, WorldClim precipitation,
+What a Waste 3.0, VIIRS nightlights, ERA5-Land runoff) are archived on Zenodo:
+**[10.5281/zenodo.20793131](https://doi.org/10.5281/zenodo.20793131)** (CC BY 4.0,
+`river-plastic-ranking-raw-data.zip`, ~2.86 GB). Download and unpack into `data/raw/`
+to reproduce the processed feature matrix via `notebooks/02_feature_engineering.ipynb`.
 
 ---
 

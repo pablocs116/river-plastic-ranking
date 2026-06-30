@@ -145,8 +145,10 @@ where new field data would most reduce its uncertainty.
 - Calibration: slope 0.71 [0.57, 0.85], R²=0.60, n=64; **without Japan 0.977, R²=0.756**
 
 > NB: many intermediate CSVs (feature_matrix_v1, observed_flux_matched_S3, processed WaW)
-> are missing from disk after the crash — regenerate via notebooks 02/04 before pulling
-> final numbers.
+> AND most raw inputs are missing from disk after the crash. RECOVERY: raw inputs are
+> archived on Zenodo — DOI 10.5281/zenodo.20793131 (river-plastic-ranking-raw-data.zip,
+> ~2.86 GB, CC BY 4.0). Download → unpack into data/raw/ → run notebooks 02/04 to
+> regenerate the feature matrix and matched-flux CSVs before pulling final numbers.
 
 ---
 
