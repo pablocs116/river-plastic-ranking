@@ -43,8 +43,10 @@ def compute_slope_percent(elevation, transform, nodata=None):
 
     dx_m = dx_deg * lon_meters_per_deg
     dzdx[:, 1:-1] = (elevation[:, 2:] - elevation[:, :-2]) / (2.0 * dx_m[:, None])
-    dzdx[:, 0] = (elevation[:, 1] - elevation[:, 0]) / dx_m[:, None]
-    dzdx[:, -1] = (elevation[:, -1] - elevation[:, -2]) / dx_m[:, None]
+    # Edge columns produce a 1-D (h,) result; divide by the per-row dx_m (h,),
+    # NOT dx_m[:, None] (h, 1) which would broadcast to a (h, h) array.
+    dzdx[:, 0] = (elevation[:, 1] - elevation[:, 0]) / dx_m
+    dzdx[:, -1] = (elevation[:, -1] - elevation[:, -2]) / dx_m
 
     slope_pct = 100.0 * np.hypot(dzdx, dzdy)
     slope_pct[mask] = np.nan
@@ -77,12 +79,22 @@ def main():
         raise SystemExit(f'No .tif files found in {elv_dir}')
 
     print(f'Found {len(tif_paths)} elevation tiles in {elv_dir}')
+    written = 0
+    skipped = 0
     for src_path in tif_paths:
         dst_path = out_dir / src_path.name
-        print(f'Processing {src_path.name} -> {dst_path}')
-        process_tile(src_path, dst_path)
+        if src_path.stat().st_size == 0:
+            print(f'  skipping empty {src_path.name}')
+            skipped += 1
+            continue
+        try:
+            process_tile(src_path, dst_path)
+            written += 1
+        except (rasterio.errors.RasterioIOError, rasterio.errors.RasterioError) as e:
+            print(f'  skipping unreadable {src_path.name}: {e}')
+            skipped += 1
 
-    print(f'Derived slope tiles written to {out_dir}')
+    print(f'Derived {written} slope tiles to {out_dir} ({skipped} skipped)')
 
 
 if __name__ == '__main__':
