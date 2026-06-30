@@ -125,12 +125,71 @@ Note: `baseline.py` PARAMS_S9 values (epsilon=0.01, tau=0.005, theta=0.07, iota=
 
 ---
 
+## Strategic Decision (2026-06-30)
+
+### The validation angle is data-walled — do not pursue it as the headline
+
+The central "models overestimate top emitters by 1.7×" claim is **fragile**: removing
+Japan (58% of the 64 calibration rivers) moves the calibration slope from 0.71 → **0.977**
+(R²=0.76) — i.e. the overestimation effect is carried almost entirely by Japanese rivers.
+
+A 2026 literature scan confirmed this is a **field-wide evidence gap**, not just ours:
+- **South America**: no field-measured annual mass-flux observations suitable for
+  validation. Only microplastic concentrations or modeled estimates (e.g. Amazon ~38,900
+  t/yr, modeled).
+- **Africa**: at most 1–2 candidates — Odaw, Ghana (macroplastic transport monitoring,
+  reported items/h → needs mass conversion); Umgeni, South Africa (Mani et al. 2026,
+  surface/daylight-only, not directly comparable).
+- **SE Asia** (already represented): Klang, Malaysia (~4,234 t/yr, 2025); Mahiga Creek,
+  Philippines (2023). Convertible but don't break Japan's dominance.
+
+### Prior art / competitive landscape (novelty check)
+
+| Work | What it is | Does it scoop us? |
+|---|---|---|
+| Meijer et al. 2021 (Sci Adv) | The deployed 31,819-outfall ranking; constant 12% plastic fraction | This is what we correct |
+| Country-specific riverine contributions (2023, STOTEN) | "R2O" country-level model + HDI, 161 countries | No — coarser, country-resolution, different architecture |
+| Rivers of plastic (Ma et al. 2024, Env. Pollution) | New socio-economic + topographic model, seasonal | No — a new model, not a Meijer correction; signals the field is active |
+
+**Verdict:** the specific contribution — substitute WaW 3.0 country-specific plastic
+fractions for Meijer's constant 12% and re-rank the operational outfall ranking — appears
+**unclaimed**. BUT the *concept* (country waste composition matters) is well-established;
+novelty is narrow and applied. Building a new model would lose to better-resourced groups.
+
+### Chosen direction: short paper around the *operational* ranking
+
+Frame: *"An updated and uncertainty-aware correction to the operational global river
+plastic ranking: country-specific waste composition reorders priority rivers, but the
+evidence base cannot yet confirm the result."*
+
+- Differentiator is **operational, not academic**: Meijer 2021 is the ranking actually
+  deployed (TOC 30 Cities). Competing 2024 models aren't used yet.
+- Packages all three honest findings: WaW 3.0 substitution (concrete) + reordering
+  (decision-relevant) + validation gap (call to action).
+- Target venue: Brief Communication / Correspondence — *Marine Pollution Bulletin*,
+  *Environmental Research Letters*, or a *Nature* journal Correspondence/Matters Arising.
+  NOT a flagship — flagship is off the table without field data that doesn't exist.
+
+### Parallel non-publication move
+
+Contact The Ocean Cleanup directly for their interceptor field data (capture rates on
+top-ranked, including non-Japanese, rivers) — the one thing that could revive validation.
+
+### MERIT status (resolved 2026-06-30)
+
+MERIT extraction now works (`merit_extracted.csv`: elv ~29.5%, slp ~18.6%, upa ~43.3%;
+slope fixed). BUT MERIT data is **not wired into the model** and, where it overlaps,
+correlates only weakly with the calibration ratio (|r| ≤ 0.13). It does not change results
+and is not needed for the short paper. Leave as documented groundwork.
+
+---
+
 ## Next Steps
 
-1. Build paper figures (calibration scatter, global ratio map, concentration comparison)
-2. Write manuscript
-3. Address Japan sensitivity in discussion (58% of calibration data)
-4. Consider: more observed data from Africa/South America (0 calibration rivers currently)
+1. Draft the short-paper framing (see `docs/paper_outline.md` → "SHORT-PAPER VERSION")
+2. Verify/convert candidate non-Japan points (Klang, Mahiga Creek, Odaw) — optional, for spread
+3. Build the one essential figure: top-20 reordering (Meijer 12% vs WaW 3.0)
+4. Outreach email to The Ocean Cleanup for interceptor capture-rate data
 
 ---
 

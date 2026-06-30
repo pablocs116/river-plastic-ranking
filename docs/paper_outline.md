@@ -14,6 +14,142 @@ Meijer et al. (2021) overestimates emissions from the world's most polluting riv
 
 ---
 
+## PROPOSED ALTERNATIVE FRAMING (added 2026-06-30) — the evidence-gap angle
+
+> Rationale: the "overestimation" headline is fragile. Removing Japan (58% of the
+> 64 calibration rivers) moves the calibration slope from 0.71 to 0.977 — i.e. the
+> overestimation effect is carried almost entirely by Japanese rivers. A 2026 literature
+> scan confirmed this is a field-wide problem, not just ours: there are **no usable
+> field-measured annual mass-flux calibration points in South America, and only one or
+> two marginal candidates in Africa** (Odaw, Ghana; Umgeni, South Africa — the latter
+> surface/daylight-only). Reframing around the evidence gap is more defensible under
+> review and arguably higher impact. Keep both framings below until we decide.
+
+### Alt working title
+**"A critical evidence gap in global river plastic emission rankings: validation is concentrated in a single country while the highest-emitting regions remain unmeasured"**
+
+### Alt one-line pitch
+The global river ranking that directs hundreds of millions of dollars in cleanup
+investment is constrained almost entirely by observations from Japan; across the
+highest-emitting regions of the world, independent measurement is effectively absent —
+and the apparent overestimation of top emitters cannot presently be distinguished from a
+temperate, developed-country artifact.
+
+### Alt abstract (draft, ~250 words)
+
+Global river plastic emission models — particularly Meijer et al. (2021), which ranks
+31,819 outfalls and underpins major intervention programs — are widely used to prioritize
+cleanup yet remain largely unvalidated against independent observations. We compiled all
+available rivers with observed annual plastic flux (n = 64) and performed the first
+independent calibration of the Meijer model. A log–log calibration suggests the model
+overestimates high-emitting rivers (slope = 0.71, 95% CI [0.57, 0.85]; R² = 0.60),
+implying ~1.7× overestimation at 1,000 t/yr. However, we show this result is critically
+fragile: 58% of the calibration rivers are Japanese, and excluding Japan moves the slope
+to 0.98 (R² = 0.76) — statistically indistinguishable from no bias. A systematic 2026
+literature scan found that this dependence reflects a field-wide evidence gap: the
+world's highest-emitting regions are almost entirely unmeasured. South America has no
+field-measured annual mass-flux observations suitable for model validation, and Africa
+has at most one to two, none using methods directly comparable to existing flux data.
+Independent observations from Mani et al. (2026) are consistent with overestimation in
+three additional rivers but use a non-comparable methodology. We conclude that the
+absolute accuracy of global river plastic rankings — and therefore reported intervention
+capture rates — is unconstrained precisely where emissions are concentrated. We provide
+recalibrated estimates for all 31,819 outfalls as provisional, explicitly flagged by the
+confidence the underlying evidence base can support, and identify the priority rivers
+where new measurements would most reduce this uncertainty.
+
+### Alt contribution list
+1. First independent calibration of a global river plastic model — and a demonstration
+   that its central result is not robust to the removal of one country.
+2. A systematic accounting of the global observed-flux evidence base, quantifying where
+   validation data exists and where it does not (the highest-emitting regions).
+3. Evidence that the apparent overestimation of top emitters is currently
+   indistinguishable from a temperate/developed-country sampling artifact.
+4. Provisional recalibrated estimates for all 31,819 outfalls, tiered by evidential
+   support rather than presented as uniformly reliable.
+5. A prioritized list of rivers/regions where new field measurements would most reduce
+   global ranking uncertainty (decision-relevant for funders and monitoring programs).
+
+### Candidate new calibration points found (2026 scan) — to verify/convert
+| River | Country | Region | Note |
+|---|---|---|---|
+| Klang | Malaysia | SE Asia | ~4,234 t/yr measured (2025); Malaysia already represented |
+| Mahiga Creek | Cebu, Philippines | SE Asia | measured emission (2023); Philippines already represented |
+| Odaw | Ghana | Africa | macroplastic transport monitoring (2023/24), reported items/h → needs mass conversion |
+| Umgeni / Rio Ozama | South Africa / Dominican Rep. | Africa / Caribbean | Mani et al. (2026); surface/daylight method, not directly comparable |
+
+> None of these break Japan's dominance, but adding the convertible ones (Klang, Mahiga
+> Creek, possibly Odaw) demonstrates due diligence and widens geographic spread.
+
+---
+
+## SHORT-PAPER VERSION (recommended, added 2026-06-30)
+
+> Decision (see DEV_NOTES "Strategic Decision 2026-06-30"): a flagship paper is off the
+> table without field data that doesn't exist. The defensible, still-open contribution is
+> a Brief Communication / Correspondence correcting the *operationally deployed* ranking
+> (Meijer 2021, used by TOC's 30 Cities program) with WaW 3.0, and honestly bounding what
+> can be validated. Differentiator is operational, not a new model.
+
+### Working title
+**"Correcting the operational global river plastic ranking for country-specific waste
+composition — and the limits of validating it"**
+
+### Target venue (short format)
+1. *Marine Pollution Bulletin* — Note/short article; home community for this work
+2. *Environmental Research Letters* — Letter format, open access, policy-facing
+3. *Nature* journal Correspondence / Matters Arising — if pitched as a direct response to
+   the deployed ranking
+
+### Abstract (draft, ~150 words)
+The Meijer et al. (2021) ranking of 31,819 river outfalls underpins operational cleanup
+prioritization, yet it applies a single constant plastic fraction (12%) to municipal waste
+worldwide. We replace this with country-specific values from World Bank What a Waste 3.0
+(range 1.6–30%) and apply documented data-quality corrections (endorheic basins,
+high-income mismanagement rates, coastal country assignment). Waste composition alone
+materially reorders the top emitters — e.g. Malaysian rivers rise ~2× (24% vs 12%) while
+low-plastic-fraction countries such as Cameroon fall ~3.5× (3.3% vs 12%). We further
+calibrate against the 64 rivers with observed flux, but show this calibration is not
+robust: it is carried almost entirely by Japanese rivers (slope 0.71 → 0.98 without
+Japan), and a literature scan confirms the highest-emitting regions have essentially no
+comparable measurements. We provide a corrected, uncertainty-flagged ranking and identify
+where new field data would most reduce its uncertainty.
+
+### Structure (target ~2,500–3,500 words)
+1. **Intro (~400 w)** — Meijer is the deployed tool (TOC 30 Cities). It hardcodes a 12%
+   plastic fraction. Two questions: does correcting that change priorities, and can we tell
+   if the corrected ranking is right?
+2. **Methods (~600 w)** — WaW 3.0 plastic-fraction substitution; data-quality fixes
+   (endorheic, HI mismanagement 50→3%, nearest-country join, coverage 65.5%→93.9%);
+   log-log calibration on n=64; Japan sensitivity; literature scan protocol.
+3. **Results (~900 w)**
+   - 3.1 Plastic-fraction substitution reorders the top 20 (main table + reasons).
+   - 3.2 Calibration shows apparent overestimation BUT is Japan-dependent (slope
+     0.71 → 0.98); present as a robustness limit, not a headline.
+   - 3.3 Evidence-gap accounting: where validation data exists vs. doesn't.
+4. **Discussion (~500 w)** — Corrected ranking is more defensible on inputs but cannot be
+   externally validated where it matters most; implications for prioritization and for
+   reported interception capture rates; what to measure next.
+5. **Conclusion (~150 w)**
+
+### The one essential figure + one table
+- **Table 1**: Top-20 rivers — Meijer (12%) emission, corrected (WaW 3.0) emission, ratio,
+  rank change, country plastic_pct. (Have data in `recalibrated_emissions_v1.csv` /
+  notebook 08 export `final_ranking_v2.csv`.)
+- **Figure 1**: Reordering visual — slope/dumbbell chart of rank change for the top 20,
+  OR the calibration scatter with Japan highlighted to make the fragility visible.
+
+### Numbers to pull from notebooks (verify before writing)
+- Meijer total 1,005,984 t/yr → corrected/full 889,196 t/yr; top-1000 71.8% → 50.7%
+- Reordering exemplars: MYS ↑ (24% vs 12%), PHL ↓ (10.5%), CMR ↓ (3.3%)
+- Calibration: slope 0.71 [0.57, 0.85], R²=0.60, n=64; **without Japan 0.977, R²=0.756**
+
+> NB: many intermediate CSVs (feature_matrix_v1, observed_flux_matched_S3, processed WaW)
+> are missing from disk after the crash — regenerate via notebooks 02/04 before pulling
+> final numbers.
+
+---
+
 ## Abstract (draft, 250 words)
 
 Global river plastic emission models are the primary tool for prioritizing cleanup interventions, yet their accuracy remains largely unvalidated against independent observations. Here, we calibrate the Meijer et al. (2021) model — which estimates emissions from 31,819 river outfalls worldwide — against 64 rivers with observed plastic flux. We find that the model systematically overestimates emissions from high-emitting rivers: a linear calibration yields log₁₀(observed) = 0.71 × log₁₀(Modeled) + 0.64 (R² = 0.60, n = 64), with a slope significantly below 1.0 (95% CI: [0.57, 0.85]). This overestimation increases with emission magnitude: at 1,000 tons/yr, models overestimate by 1.7× (95% CI: 1.0–2.6×); at 5,000 tons/yr, by 2.6× (95% CI: 1.2–5.3×). Independent confirmation comes from Mani et al. (2026), who observed fluxes 34–98% lower than model estimates across three rivers using GPS drifters and camera systems. We attribute the overestimation gap between monthly (R² = 0.73) and annual (R² = 0.60) model performance to episodic transport — 50% of annual flux occurs in only 7–12% of the year — and to tidal retention in estuaries. For the ~1,000 rivers responsible for 80% of global emissions, these results imply that interception efforts capture 1.0–2.6× more of the true riverine flux than currently estimated. Recalibrated emission estimates and uncertainty ranges are provided for all 31,819 outfalls.
