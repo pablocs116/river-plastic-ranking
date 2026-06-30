@@ -39,11 +39,23 @@ Scripts in `scripts/` (run with the venv):
 - `derive_merit_slope_from_elv.py` — compute slope-% tiles from elevation tiles (there are no real `_slp.tif` tiles).
 - `extract_merit.py` — older standalone extractor (nearest-valid-pixel; skips empty/corrupt tiles).
 
-### Known issues (as of 2026-06-30)
+### Status (as of 2026-06-30)
 
-1. **Partial tile coverage.** `data/raw/merit_15s_filtered/15s/{elv,upa}` holds only ~255 tiles, so the latest `merit_extracted.csv` is only ~30% (elevation) / ~43% (upstream area) filled. Full coverage requires extracting more tiles from the zip.
-2. **Slope is broken.** `slope_pct` comes out absurd (median ~195,000%). Cause: `derive_merit_slope_from_elv.py` does not mask `-9999` nodata robustly before differencing, so nodata leaks into the elevation gradient. Fix: mask nodata (and implausible values) before `np.gradient`, and clip slope to a sane max. Elevation and upstream area are fine.
-3. The `slp/` tile dir was historically polluted with copies of `_elv.tif` tiles (no real slope tiles exist) — slope must be derived.
+`data/processed/merit_extracted.csv` is now populated with real values:
+elevation ~29.5%, slope ~18.6%, upstream area ~43.3%. Slope is sane
+(median ~2.2%, max ~131%).
+
+1. **Partial tile coverage.** `data/raw/merit_15s_filtered/15s/{elv,slp,upa}`
+   holds only a subset of global tiles (~255 elv / ~331 upa), so outfalls
+   outside them stay NaN. Fuller coverage requires extracting more tiles from
+   `MERIT_Hydro.zip` via `merit_prepare_and_extract.py`.
+2. **A few extracted tiles are corrupt** (`TIFFReadDirectory` / "not
+   recognized as supported format"), e.g. `n00w075_elv.tif`, `n10e120_elv.tif`.
+   Both the derive and sample scripts skip unreadable tiles rather than abort.
+3. There are **no real `_slp.tif` tiles** — slope is derived from elevation via
+   `derive_merit_slope_from_elv.py` (filenames keep the `_elv` suffix; the
+   sampler globs `*.tif` so this is fine). The `slp/` dir was historically
+   polluted with copies of elevation tiles; clear it before re-deriving.
 
 ## Conventions
 
