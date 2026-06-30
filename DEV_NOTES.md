@@ -193,6 +193,43 @@ and is not needed for the short paper. Leave as documented groundwork.
 
 ---
 
+## Release Checklist (do NOT release yet)
+
+Current state (2026-06-30): **no official release exists.** Only the raw-data deposit is
+published. Do not tag code or mint a results DOI until the short-paper analysis is locked —
+the numbers will be regenerated from the recovered raw data first.
+
+| Artifact | Status | DOI |
+|---|---|---|
+| Raw input data (Zenodo, Dataset) | ✅ published 2026-06-22 | 10.5281/zenodo.20793131 |
+| Code release (git tag → Zenodo software) | ❌ none | — |
+| Results/processed-data archive (Zenodo) | ❌ none | — |
+| Preprint | ❌ none (README badge is a placeholder) | — |
+| Paper | ❌ not written | — |
+
+### Sequence when the analysis is final
+
+1. **Lock the analysis** — regenerate `feature_matrix_v1.csv` etc. from the Zenodo raw
+   data, finalize the top-20 reordering table and figure, freeze the numbers.
+2. **Clean the repo for release** — README structure matches reality (remove the
+   nonexistent `src/` modules / XGBoost framing), `environment.yml` reproduces, notebooks
+   run top-to-bottom.
+3. **Tag the code** — `git tag v0.1 && git push --tags`. Enable the GitHub–Zenodo
+   integration first so the tag auto-archives as a **software** record with its own DOI.
+4. **Archive results** — deposit processed outputs (`recalibrated_emissions`, final ranking
+   table, figures) as a new Zenodo record OR a new version in the existing version group
+   (concept 20793130) so raw + code + results share lineage.
+5. **Cross-link DOIs** — add the software + results DOIs to README, CITATION.cff, and the
+   paper's Data/Code Availability statement; reference the raw-data DOI as the upstream input.
+6. **Preprint** — post to EarthArXiv (matches the citation stub) or the target journal's
+   preprint server; update the README badge from placeholder to the real link.
+7. **Submit** — Brief Communication / Correspondence per the short-paper plan.
+
+> Note: minting a software/results DOI now would lock in numbers we're about to recompute.
+> The existing raw-data deposit is the only thing that should be public at this stage.
+
+---
+
 ## Technical Gotchas
 
 - ERA5 uses `valid_time` not `time`, variables `ro`/`ssro`/`sro`
