@@ -134,15 +134,43 @@ where new field data would most reduce its uncertainty.
 
 ### The one essential figure + one table
 - **Table 1**: Top-20 rivers — Meijer (12%) emission, corrected (WaW 3.0) emission, ratio,
-  rank change, country plastic_pct. (Have data in `recalibrated_emissions_v1.csv` /
-  notebook 08 export `final_ranking_v2.csv`.)
+  rank change, country plastic_pct.
+  **Reproduced 2026-07-01** via `scripts/plastic_fraction_reorder.py` →
+  `data/processed/plastic_fraction_reordering.csv` (lightweight path; does not need the
+  OOM-prone feature-matrix rebuild). Values below are final for this layer.
 - **Figure 1**: Reordering visual — slope/dumbbell chart of rank change for the top 20,
   OR the calibration scatter with Japan highlighted to make the fragility visible.
 
-### Numbers to pull from notebooks (verify before writing)
-- Meijer total 1,005,984 t/yr → corrected/full 889,196 t/yr; top-1000 71.8% → 50.7%
-- Reordering exemplars: MYS ↑ (24% vs 12%), PHL ↓ (10.5%), CMR ↓ (3.3%)
+### Table 1 — confirmed top-20 (plastic-fraction layer, E_corrected)
+| iso3 | Meijer t/yr | plastic_pct | ratio | corrected t/yr | rank move |
+|---|---|---|---|---|---|
+| PHL | 62,592 | 10.55 | 0.88 | 55,029 | #1 → #1 |
+| MYS | 12,816 | 24.00 | 2.00 | 25,632 | #4 → #2 |
+| IND | 13,433 | 16.10 | 1.34 | 18,022 | #3 → #3 |
+| PHL | 13,450 | 10.55 | 0.88 | 11,825 | #2 → #4 |
+| PHL | 12,398 | 10.55 | 0.88 | 10,900 | #5 → #5 |
+| BGD |  6,222 | 17.65 | 1.47 |  9,151 | #8 → #6 |
+| MYS |  3,275 | 24.00 | 2.00 |  6,549 | #21 → #8 (+13) |
+| MYS |  2,467 | 24.00 | 2.00 |  4,934 | #40 → #13 (+27) |
+| MYS |  2,187 | 24.00 | 2.00 |  4,374 | #46 → #17 (+29) |
+| MYS |  2,143 | 24.00 | 2.00 |  4,287 | #51 → #18 (+33) |
+
+Story: Malaysian rivers (24% plastic vs Meijer's 12%) surge up to +33 ranks; Philippine
+rivers (10.55%) slide down. Full 20 rows in the CSV.
+
+### Confirmed numbers (reproduced 2026-07-01 from recovered data)
+- Meijer total **1,005,984 t/yr** (matches original exactly — pipeline verified)
+- Plastic-fraction layer alone: **1,087,030 t/yr** (RISES; Malaysia etc. push it up).
+  The drop to ~889,196 t/yr in earlier notes is the SEPARATE calibration+nightlight layer
+  (E_final), not the plastic correction — do not conflate the two in the paper.
+- Reordering exemplars (exact): MYS ratio 2.00 (24% vs 12%), PHL 0.88 (10.55%),
+  IND 1.34, BGD 1.47, THA 1.47, IDN 1.60
 - Calibration: slope 0.71 [0.57, 0.85], R²=0.60, n=64; **without Japan 0.977, R²=0.756**
+  (still to re-verify — needs the observed-flux matched CSV, currently missing)
+
+> Caveats baked into the Table 1 numbers: endorheic zeroing omitted (~45 inland rivers,
+> immaterial for the coastal top-20); country assignment via Natural Earth 110m + nearest
+> join; `E_final` (calibration/nightlight) layer not applied here.
 
 > NB: many intermediate CSVs (feature_matrix_v1, observed_flux_matched_S3, processed WaW)
 > AND most raw inputs are missing from disk after the crash. RECOVERY: raw inputs are
