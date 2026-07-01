@@ -125,6 +125,31 @@ Note: `baseline.py` PARAMS_S9 values (epsilon=0.01, tau=0.005, theta=0.07, iota=
 
 ---
 
+## Reproducibility Rebuild (2026-07-01)
+
+The full notebook pipeline now executes end-to-end **locally on 7.6 GB RAM** and produces
+its figures/tables. The OOM (notebook 02 loading the 1.5 GB HydroRIVERS gdb) was resolved
+by moving heavy geo sampling into memory-bounded scripts:
+
+- `scripts/sample_hydrorivers_at_outfalls.py` — tiled bbox nearest-reach join
+  (reproduces the original exactly: 31,792/31,819 matched, 45 endorheic)
+- `scripts/sample_viirs_at_outfalls.py` — VIIRS nightlight sampling (11.6 GB raster,
+  windowed reads)
+- `scripts/build_observed_flux_s3.py` — regenerates the 64-river calibration set from the
+  hardcoded Meijer Table S3 values + shapefile
+- notebook 02 now reads these pre-extracted CSVs; ERA5 cell skipped (unused; OOMed on the
+  1.2 GB .nc)
+
+Executed: 02, 04, 05, 06, 07, 08, 09 (all `*_executed.ipynb` committed with outputs).
+Publication figures (fig1-8) in `results/figures/`. Meijer total verified 1,005,984 t/yr
+(unchanged). Extra deps beyond the geo stack: scikit-learn, xgboost, cartopy, netCDF4
+(all in requirements.txt).
+
+Order to reproduce from raw data: sample_hydrorivers → sample_viirs → build_observed_flux_s3
+→ nb02 → nb04/05/06 → nb07/08 → nb09.
+
+---
+
 ## Strategic Decision (2026-06-30)
 
 ### The validation angle is data-walled — do not pursue it as the headline
