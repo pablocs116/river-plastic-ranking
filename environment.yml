@@ -1,31 +1,25 @@
+# Conda environment matching the working analysis stack (Python 3.10).
+# The pip-installable pins are also in requirements.txt (used for the .river-env venv).
+# The abandoned ML stack (xgboost/lightgbm/shap/mapie) is intentionally NOT included —
+# the method is log-log calibration + plastic-fraction correction, not machine learning.
 name: riverplastic
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.11
+  - python=3.10
   - pip
-  - numpy
-  - pandas
-  - scipy
-  - matplotlib
-  - jupyter
+  - numpy=2.2.*
+  - pandas=2.3.*
+  - scipy=1.15.*
+  - matplotlib=3.10.*
+  - geopandas=1.1.*
+  - pyogrio=0.13.*
+  - shapely=2.1.*
+  - pyproj=3.7.*
+  - rasterio=1.4.*
+  - xarray=2025.6.*
+  - openpyxl=3.1.*
   - ipykernel
+  - nbconvert
   - pip:
-    - geopandas
-    - pysheds
-    - rasterio
-    - xarray
-    - zarr
-    - cdsapi
-    - earthengine-api
-    - xgboost
-    - lightgbm
-    - shap
-    - mapie
-    - scikit-learn
-    - folium
-    - cartopy
-    - tqdm
-    - requests
-    - python-dotenv
+    - -r requirements.txt

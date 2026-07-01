@@ -3,7 +3,7 @@
 > An independent recalibration of the Meijer et al. (2021) global river plastic emission model against 64 observed flux measurements, with updated waste statistics (World Bank What a Waste 3.0) and a nightlight-based correction for urban waste management quality.
 
 [License: MIT](LICENSE)
-[Python 3.11](https://www.python.org/)
+[Python 3.10](https://www.python.org/)
 [Raw data DOI: 10.5281/zenodo.20793131](https://doi.org/10.5281/zenodo.20793131)
 [Status: In Progress](#)
 
@@ -67,40 +67,32 @@ All data is freely available. See `docs/data_access.md` for download instruction
 river-plastic-ranking/
 │
 ├── data/
-│   ├── raw/                  # Downloaded source files (not committed, see docs/)
-│   └── processed/            # Cleaned, merged features per river outfall
+│   ├── raw/                  # Source datasets — not committed; archived on Zenodo (see Data availability)
+│   └── processed/            # Feature matrix, recalibrated emissions, reordering outputs
 │
 ├── notebooks/
-│   ├── 01_baseline_reproduction.ipynb   # Reproduce Meijer 2021 within 10% R²
-│   ├── 02_feature_engineering.ipynb     # Build updated feature matrix
-│   ├── 03_model_training.ipynb          # XGBoost + conformal prediction
-│   ├── 04_validation.ipynb              # Held-out evaluation vs baseline
-│   └── 05_results_figures.ipynb         # All publication figures
+│   ├── 01_baseline_reproduction.ipynb   # Reproduce the Meijer 2021 baseline
+│   ├── 02_feature_engineering.ipynb     # Build the feature matrix (needs raw data; memory-heavy)
+│   ├── 03_model_training.ipynb          # Baseline model runs / diagnostics
+│   ├── 04_observed_flux_model.ipynb     # Calibration against observed flux
+│   ├── 05_updated_ranking.ipynb         # Recalibrated ranking
+│   ├── 06_paper_analysis.ipynb          # Calibration + recalibrated estimates
+│   ├── 07_updated_ranking.ipynb         # Ranking with data-quality fixes
+│   ├── 08_improved_model.ipynb          # Plastic-fraction + nightlight correction
+│   └── 09_paper_figures.ipynb           # Manuscript figures
+│   (each NN_*.ipynb has a paired NN_*_executed.ipynb with outputs)
 │
-├── src/
-│   ├── features/
-│   │   ├── hydrology.py      # MERIT Hydro processing, upstream area aggregation
-│   │   ├── waste.py          # World Bank waste data merging by country/catchment
-│   │   ├── climate.py        # ERA5 runoff extraction and temporal aggregation
-│   │   └── socioeconomic.py  # Nightlights, OSM road density, WASH index
-│   ├── models/
-│   │   ├── baseline.py       # Meijer 2021 probabilistic reimplementation
-│   │   ├── xgboost_model.py  # XGBoost training + SHAP explainability
-│   │   └── uncertainty.py    # Conformal prediction intervals (MAPIE)
-│   └── viz/
-│       ├── maps.py           # Geopandas + matplotlib global maps
-│       └── validation.py     # Residual plots, rank correlation figures
+├── scripts/
+│   ├── plastic_fraction_reorder.py      # Lightweight repro of the top-20 reordering (core result)
+│   ├── extract_merit.py, merit_*.py     # MERIT Hydro extraction pipeline
+│   └── download_*.py                    # Auxiliary dataset download helpers
 │
-├── results/
-│   ├── figures/              # Publication-ready figures (PNG + SVG)
-│   └── tables/               # Updated ranking tables (CSV + GeoJSON)
+├── src/models/baseline.py               # Meijer 2021 probabilistic reimplementation
 │
-├── docs/
-│   ├── data_access.md        # Step-by-step download instructions per dataset
-│   └── methods.md            # Detailed methods supplement
-│
-├── environment.yml           # Conda environment (fully reproducible)
-├── .gitignore
+├── docs/                                # paper_outline.md, methods.md, literature reviews
+├── DEV_NOTES.md                         # Full development log, decisions, gotchas
+├── environment.yml / requirements.txt   # Reproducible environment (Python 3.10)
+├── CITATION.cff
 └── LICENSE
 ```
 
@@ -108,33 +100,45 @@ river-plastic-ranking/
 
 ## Quickstart
 
+The headline result (top-20 reordering) reproduces in seconds and does **not** need the
+memory-heavy feature-engineering step:
+
 ```bash
-# 1. Clone
 git clone https://github.com/pablocs116/river-plastic-ranking.git
 cd river-plastic-ranking
 
-# 2. Create environment
-conda env create -f environment.yml
-conda activate riverplastic
+# Environment (Python 3.10)
+python -m venv .river-env && .river-env/bin/pip install -r requirements.txt
+#   or:  conda env create -f environment.yml && conda activate riverplastic
 
-# 3. Download data (see docs/data_access.md for credentials)
-# Then run notebooks in order: 01 → 02 → 03 → 04 → 05
+# Recover raw inputs from Zenodo, unpack into data/raw/
+#   (2.86 GB — see Data availability). Then reproduce the core reordering:
+.river-env/bin/python scripts/plastic_fraction_reorder.py
 ```
+
+Rebuilding the full feature matrix (`notebooks/02_feature_engineering.ipynb`) reads the
+1.5 GB HydroRIVERS geodatabase and needs **>8 GB RAM** — run it on a higher-memory machine
+or in Google Colab.
 
 ---
 
 ## Methods summary
 
-This model follows Meijer et al.'s conceptual framework (mismanaged plastic waste × mobilization probability × river transport probability) but replaces the expert-elicited parameters with a gradient-boosted regression (XGBoost) trained on observed plastic flux measurements from ~80 rivers globally.
+This work follows Meijer et al.'s conceptual framework (mismanaged plastic waste ×
+mobilization probability × river transport probability) and **recalibrates** it against
+observations — it is not a machine-learning model. Two corrections are applied to the
+published Meijer emissions:
 
-Key improvements over Meijer 2021:
+1. **Country-specific plastic fraction** — replace Meijer's constant 12% with World Bank
+   What a Waste 3.0 values (1.6–30% per country), plus data-quality fixes (endorheic
+   basins, implausible high-income mismanagement defaults, coastal country assignment).
+2. **Observational calibration** — a log–log linear calibration against 64 rivers with
+   observed annual flux, with a nightlight-based term for within-country waste-management
+   quality, and bootstrap uncertainty.
 
-1. **Updated waste data** — World Bank What a Waste 3.0 (data through 2022) vs Jambeck 2015
-2. **Higher-resolution river network** — MERIT Hydro 90m vs HydroSHEDS 500m
-3. **Temporal forcing** — ERA5 runoff anomalies 2015–2025 vs static climatology
-4. **New features** — urbanization trend (VIIRS), infrastructure access (OSM), WASH investment index
-5. **Uncertainty quantification** — conformal prediction intervals vs point estimates
-6. **Extended validation** — ~80 observed fluxes vs ~50 in original paper
+> Note: an earlier design explored XGBoost / conformal prediction. It was dropped — with
+> n = 64 calibration rivers, ML did not outperform linear calibration. The current method
+> is calibration + input correction. See `DEV_NOTES.md` for the full history.
 
 ---
 
