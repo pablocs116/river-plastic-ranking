@@ -57,7 +57,8 @@ This project reproduces the Meijer 2021 baseline, diagnoses a structural overest
 | Field flux observations | Meijer S4/S5 + van Emmerik et al.                                                       | Model validation                                |
 
 
-All data is freely available. See `docs/data_access.md` for download instructions.
+All data is freely available. See `data_access.md` for download instructions, or recover
+everything at once from the Zenodo deposit (below).
 
 ---
 
@@ -89,7 +90,8 @@ river-plastic-ranking/
 │
 ├── src/models/baseline.py               # Meijer 2021 probabilistic reimplementation
 │
-├── docs/                                # paper_outline.md, methods.md, literature reviews
+├── docs/                                # paper_outline.md, literature reviews
+├── methods.md, data_access.md           # Methods supplement, data download guide
 ├── DEV_NOTES.md                         # Full development log, decisions, gotchas
 ├── environment.yml / requirements.txt   # Reproducible environment (Python 3.10)
 ├── CITATION.cff
